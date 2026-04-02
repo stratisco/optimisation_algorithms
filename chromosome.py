@@ -2,7 +2,7 @@ import random
 from context import STAFF_DICT, PROJECTS_DICT
 
 
-OPTIMISATIONS = False
+OPTIMISATIONS = True
 
 MUTATE_ROW_FLIP = False
 
