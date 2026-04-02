@@ -2,21 +2,21 @@ import random
 from context import STAFF_DICT, PROJECTS_DICT
 
 
-OPTIMISATIONS = True
+OPTIMISATIONS = False
 
 MUTATE_ROW_FLIP = False
 
 
 __cost_cache:dict = {}
-
 def vectorCost(vector: list[list[int]]) -> float:
     '''
     cache flag forces cost caching to either be off or on. otherwise it defaults to OPTIMISATION
     '''
 
-    cache_key = str(vector)
+    # cache key is a tuple bc apparently they are faster than using strings (google said so it must be true)
+    cache_key = tuple(tuple(a) for a in vector)
 
-    if cache_key in __cost_cache and OPTIMISATIONS:
+    if OPTIMISATIONS and cache_key in __cost_cache:
         return __cost_cache[cache_key]
 
 
@@ -30,25 +30,25 @@ def vectorCost(vector: list[list[int]]) -> float:
     skill_penalty = 0
     difficulty_penalty = 0
     deadline_penalty = 0
-    assignment_violation = 0
-
 
     # unique assignment
-    for assignments in vector:
-        assignment_violation += abs(sum(assignments) - 1)
+    assignment_violation = sum(abs(sum(a) - 1) for a in vector)
 
     staff_projects = {staff_id: [] for staff_id in STAFF_DICT}
+    for project_i, assignments in enumerate(vector):
+        project = PROJECTS_DICT[project_i + 1]
+        for staff_i, assigned in enumerate(assignments):
+            if assigned:
+                staff_projects[staff_i + 1] += [project]
 
-    for projectId, assignments in enumerate(vector):
-        for staffId, assigned in enumerate(assignments):
-            if assigned == 1:
-                staff_projects[staffId + 1].append(PROJECTS_DICT[projectId + 1])
+    for staff_id, projects in staff_projects.items():
+        if not projects:
+            continue  # if staff member has no assignments then skip
 
-    for staffId, projects in staff_projects.items():
-        staff = STAFF_DICT[staffId]
+        staff = STAFF_DICT[staff_id]
 
         # capacity constraint
-        total_time = sum([p.estimated_time for p in projects])
+        total_time = sum(p.estimated_time for p in projects)
         overwork_penalty += max(0, total_time - staff.available_hours)
 
         for project in projects:
@@ -59,7 +59,7 @@ def vectorCost(vector: list[list[int]]) -> float:
             if project.required_skill not in staff.skills:
                 skill_penalty += 1
 
-        # deadline consideration (difficulty)
+        # deadline penalty
         time_sum = 0
         for project in sorted(projects, key=lambda p: p.estimated_time):
             time_sum += project.estimated_time
@@ -158,14 +158,30 @@ def tournament_selection(population:list[Chromosome], subsize:int=5) -> list[Chr
 
 
 if __name__ == '__main__':
-    p1 = Chromosome()
-    p2 = Chromosome()
 
-    print(p1)
-    print(p2)
+    OPTIMISATIONS = False
 
-    c = Chromosome.crossoverChild(p1, p2)
+    c = Chromosome([[1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0], [0, 0, 0, 1, 0], [0, 1, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0]])
+    assert c.getCost() == 6.4
+    print(c.getCost())
+    
+    c = Chromosome([[0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [0, 0, 1, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0], [0, 0, 1, 0, 0], [0, 0, 0, 1, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0]])
+    assert c.getCost() == 5.2
+    print(c.getCost())
 
-    print(c)
-    c.mutate()
-    print(c)
+    c = Chromosome([[1, 0, 0, 0, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 1], [0, 0, 1, 0, 0], [1, 0, 0, 0, 0], [0, 1, 0, 0, 0], [0, 1, 0, 0, 0], [1, 0, 0, 0, 0], [0, 0, 0, 0, 1], [0, 0, 0, 1, 0]])
+    assert c.getCost() == 2.8    
+    print(c.getCost())
+
+    c = Chromosome([[1, 1, 0, 1, 0], [0, 0, 1, 0, 0], [0, 0, 0, 0, 1], [0, 0, 1, 0, 1], [1, 0, 0, 0, 0], [0, 1, 0, 1, 1], [0, 1, 0, 0, 0], [1, 0, 1, 0, 0], [0, 0, 0, 0, 1], [0, 1, 0, 1, 0]])
+    assert c.getCost() == 9.6    
+    print(c.getCost())
+
+
+    c = Chromosome([[1, 0, 1, 1, 1], [1, 1, 0, 0, 1], [1, 1, 0, 1, 1], [0, 1, 0, 1, 1], [1, 1, 0, 0, 0], [0, 1, 1, 1, 0], [1, 1, 0, 0, 1], [0, 1, 1, 0, 1], [0, 1, 1, 1, 0], [0, 1, 0, 0, 1]])
+    assert c.getCost() == 60    
+    print(c.getCost())
+
+    c = Chromosome([[1, 1, 1, 1, 1], [0, 0, 0, 1, 0], [1, 1, 0, 0, 1], [1, 1, 1, 0, 1], [0, 1, 1, 0, 1], [0, 1, 0, 1, 0], [1, 0, 0, 1, 0], [0, 1, 0, 0, 1], [0, 0, 0, 0, 0], [1, 0, 0, 0, 0]])
+    assert c.getCost() == 29.6
+    print(c.getCost())
