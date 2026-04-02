@@ -1,8 +1,8 @@
 import random
-from context import *
+from context import STAFF_DICT, PROJECTS_DICT
 
 
-OPTIMISATION = True
+OPTIMISATIONS = True
 
 MUTATE_ROW_FLIP = False
 
@@ -16,7 +16,7 @@ def vectorCost(vector: list[list[int]]) -> float:
 
     cache_key = str(vector)
 
-    if cache_key in __cost_cache and OPTIMISATION:
+    if cache_key in __cost_cache and OPTIMISATIONS:
         return __cost_cache[cache_key]
 
 
@@ -37,15 +37,15 @@ def vectorCost(vector: list[list[int]]) -> float:
     for assignments in vector:
         assignment_violation += abs(sum(assignments) - 1)
 
-    staff_projects = {s.id: [] for s in STAFF_LIST}
+    staff_projects = {staff_id: [] for staff_id in STAFF_DICT}
 
     for projectId, assignments in enumerate(vector):
         for staffId, assigned in enumerate(assignments):
             if assigned == 1:
-                staff_projects[staffId + 1] += [PROJECTS_LIST[projectId]]
+                staff_projects[staffId + 1].append(PROJECTS_DICT[projectId + 1])
 
     for staffId, projects in staff_projects.items():
-        staff = STAFF_LIST[staffId-1]
+        staff = STAFF_DICT[staffId]
 
         # capacity constraint
         total_time = sum([p.estimated_time for p in projects])
@@ -67,7 +67,7 @@ def vectorCost(vector: list[list[int]]) -> float:
 
     out = _a * overwork_penalty + _b * skill_penalty + _d * difficulty_penalty + _t * deadline_penalty + _y * assignment_violation
 
-    if OPTIMISATION:
+    if OPTIMISATIONS:
         __cost_cache[cache_key] = out
 
     return out
@@ -85,13 +85,13 @@ class Chromosome:
     def __init__(self, vector=None):
         self.__vector = []
         
-        for _ in range(len(PROJECTS_LIST)):
-            if OPTIMISATION:
-                row = [0] * len(STAFF_LIST)
-                row[random.randint(0, len(STAFF_LIST) - 1)] = 1
+        for _ in range(len(PROJECTS_DICT)):
+            if OPTIMISATIONS:
+                row = [0] * len(STAFF_DICT)
+                row[random.randint(0, len(STAFF_DICT) - 1)] = 1
 
             else:
-                row = [random.randint(0, 1) for _ in range(len(STAFF_LIST))]
+                row = [random.randint(0, 1) for _ in range(len(STAFF_DICT))]
         
             self.__vector += [row]
 

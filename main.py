@@ -1,6 +1,6 @@
 import sys, time
+from swarm import *
 from genetic import genetic_algorithm
-from particle import particleSwarm
 
 start = time.time()
 
@@ -9,11 +9,10 @@ if '-g' in sys.argv:
 
     print(genetic_algorithm(100, 100))
 
-# elif '-p' in sys.argv:
-#     print('Particle Swarm')
+elif '-p' in sys.argv:
+    print('Particle Swarm')
 
-#     print(particleSwarm(None, None)
-# )
+    print(optimiseParticleSwarm())
 
 else:
     print('# No arguments given')

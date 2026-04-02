@@ -1,6 +1,7 @@
-# Genetic algorithm
+> [!IMPORTANT]
+> Make sure you have pulled before you make a pull request to try avoid merge conflicts
 
-## Vector representation:
+## Vector representation *(for genetic algorithm)*:
 
 uses a 3d vector of bits such that `vector[projectId][staffId]` equals `1` if the staff member is assigned to the project and `0` if not
 
@@ -16,29 +17,32 @@ vector = [
 ```
 
 
-<!-- ## Files
+## Files
 
-*docs*
-* `README.md` - this file
-* `brief.pdf` - copy of assignment brief
+*misc scripts*
+* `main.py` - main script to run all programs
+* `context.py` - context for situation (staff/project info)
 
-*program*
-* `main.py` - simple script that runs genetic algorithm
-* `genetic.py` - source code for genetic algorithm (evolving, mutation, crossover)
-* `vector.py` - vector representation of project-staff assignments (get cost, random vector, print vector)
-* `context.py` - context of situation (staff details, project details)
-* `simple_timer.py` - simple timer module -->
+*genetic algorithm*
+* `genetic.py` - main genetic algorithm script
+* `chromosome.py` - chromosome/vector script
+
+*particle swarm*
+* `particle.py` - 
+* `swarm.py` - 
+
 
 <!-- *outputs*
 * `genetic_graph.png` - graphical output showing the cost over each generation
 * `cost_distribution.png` - small graph to show distribution of random assignment vectors -->
 
-<!-- *misc*
-* .gitignore - git ignore file -->
+*misc*
+* `README.md` - this file
+* `.gitignore` - git ignore file
 
 
 ## Running this script
-1. Ensure all files are downloaded
+1. Clone repo
 2. Navigate to base directory
 3. Run `python main.py`
 4. See output and note that now `genetic_graph.png` is now generated
