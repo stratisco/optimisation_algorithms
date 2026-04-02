@@ -1,122 +1,97 @@
 import random
 import time
 from copy import deepcopy
-import context
+from context import *
+from collections import defaultdict
 
-tasks = {
-    f'T{p.id}': {'time': p.estimated_time, 'difficulty': p.difficulty, 'deadline': p.deadline, 'skill': p.required_skill}
-    for p in context.PROJECTS_LIST
-}
+# tasks = {
+#     'T1': {'time': 4, 'difficulty': 3, 'deadline': 8, 'skill': 'A'},
+#     'T2': {'time': 6, 'difficulty': 5, 'deadline': 12, 'skill': 'B'},
+#     'T3': {'time': 2, 'difficulty': 2, 'deadline': 6, 'skill': 'A'},
+#     'T4': {'time': 5, 'difficulty': 4, 'deadline': 10, 'skill': 'C'},
+#     'T5': {'time': 3, 'difficulty': 1, 'deadline': 7, 'skill': 'A'},
+#     'T6': {'time': 8, 'difficulty': 6, 'deadline': 15, 'skill': 'B'},
+#     'T7': {'time': 4, 'difficulty': 3, 'deadline': 9, 'skill': 'C'},
+#     'T8': {'time': 7, 'difficulty': 5, 'deadline': 14, 'skill': 'B'},
+#     'T9': {'time': 2, 'difficulty': 2, 'deadline': 5, 'skill': 'A'},
+#     'T10': {'time': 6, 'difficulty': 4, 'deadline': 11, 'skill': 'C'},
+# }
 
-employees = {
-    f'E{s.id}': {'available_hours': s.available_hours, 'skill_level': s.skill_level, 'skills': s.skills}
-    for s in context.STAFF_LIST
-}
+# employees = {
+#     'E1': {'available_hours': 10, 'skill_level': 4, 'skills': ['A', 'C']},
+#     'E2': {'available_hours': 12, 'skill_level': 6, 'skills': ['A', 'B', 'C']},
+#     'E3': {'available_hours': 8, 'skill_level': 3, 'skills': ['A']},
+#     'E4': {'available_hours': 15, 'skill_level': 7, 'skills': ['B', 'C']},
+#     'E5': {'available_hours': 9, 'skill_level': 5, 'skills': ['A', 'C']},
+# }
 
-taskKeys = list(tasks.keys())
-EMPKeys  = list(employees.keys())
+taskKeys = list(task.id for task in PROJECTS_LIST)
+EMPKeys  = list(employee.id for employee in STAFF_LIST)
 nEMP     = len(EMPKeys)
 nTasks   = len(taskKeys)
 
-def decodeParticle(position: list[float]) -> dict[str, str]:
-    assignment = {}
-    for i in range(nTasks):
-        task = taskKeys[i]
-        start_idx = i * nEMP
-        end_idx = start_idx + nEMP
-        task_values = position[start_idx:end_idx]
-        # Select the employee with the highest value (argmax)
-        emp_idx = task_values.index(max(task_values))
-        assignment[task] = EMPKeys[emp_idx]
-    return assignment
-
-# Particle Swarm Optimization
-
-def particleSwarm(tasks, employees, num_particles=200, max_iterations=1200, w=0.5, C1=2, C2=2):
-    # Initialize particles
-    particles = []
-    for i in range(num_particles):
-        position = [random.uniform(0, 1) for _ in range(nTasks * nEMP)]  # Continuous values for each task-employee pair
-        velocity = [random.uniform(-1, 1) for _ in range(nTasks * nEMP)]
-        f = fitness(decodeParticle(position), 1, 1, 1, 1)
-        particle = {
-            'position': position,
-            'velocity': velocity,
-            'best_position': position[:],
-            'best_fitness': f,
-        }
-        particles.append(particle)
-
-    globalBest = min(particles, key=lambda p: p['best_fitness'])
-    globalPos = globalBest['best_position'][:]
-    globalFitness = globalBest['best_fitness']
-
-    for i in range(max_iterations):
-        for particle in particles:
-
-            new_vel = []
-            new_pos = []
-
-            for d in range(nTasks * nEMP):
-                r1 = random.random()
-                r2 = random.random()
-
-                # Vi+1 = w*Vi + C1*r1*(PB - Xi) + C2*r2*(GB - Xi)
-                v = (w  * particle['velocity'][d]
-                     + C1 * r1 * (particle['best_position'][d] - particle['position'][d])
-                     + C2 * r2 * (globalPos[d] - particle['position'][d]))
- 
-                # Xi+1 = Xi + Vi+1  (clamped to 0-1 for simplicity, as it's continuous)
-                x = particle['position'][d] + v
-                x = max(0.0, min(1.0, x))
- 
-                new_vel.append(v)
-                new_pos.append(x)
- 
-            particle['velocity'] = new_vel
-            particle['position'] = new_pos
-
-            f = fitness(decodeParticle(new_pos), 1, 1, 1, 1)
-
-            if f < particle['best_fitness']:
-                particle['best_fitness'] = f
-                particle['best_position'] = new_pos[:]
-
-            if f < globalFitness:
-                globalFitness = f
-                globalPos = new_pos[:]
-
-        if globalFitness == 0:
-            break
-
-    best_assignment = decodeParticle(globalPos)
-    # print("Best Assignment:", best_assignment)
-    # print(f"Best Fitness:    {globalFitness:.4f}")
-    return best_assignment, globalFitness
-
-def fitness(particle, alfa, beta, delta, gamma):
-    # α × (Overload Penalty) + β × (Skill Mismatch Penalty)
-    # + δ × (Difficulty Violation Penalty) + γ × (Deadline Violation Penalty)
-    # + σ × (Unique Assignment Violation Penalty)
-    hoursUsed = {e: 0 for e in employees}
-    overload = 0
-    skillMismatch = 0
-    difficultyViolation = 0
-    deadlineViolation = 0
-
-    for task, employee in particle.items():   # ← iterate assignment directly
-        if tasks[task]['skill'] not in employees[employee]['skills']:
-            skillMismatch += 1e6
-        difficultyViolation += max(0, tasks[task]['difficulty'] - employees[employee]['skill_level'])
-        hoursUsed[employee] += tasks[task]['time']
-
-    for emp in employees:
-        overload += max(0, hoursUsed[emp] - employees[emp]['available_hours'])
-
-    return alfa * overload + beta * skillMismatch + delta * difficultyViolation + gamma * deadlineViolation
+class Particle:
+    def __init__(self):
+        self.position = [[random.uniform(0, 1) for _ in range(nEMP)] for _ in range(nTasks)]
+        self.velocity = [[random.uniform(-1, 1) for _ in range(nEMP)] for _ in range(nTasks)]
+        self.bestPosition = [row[:] for row in self.position]
+        self.bestFitness = self.fitness(.2, .2, .2, .2)
 
 
-if __name__ == '__main__':
-    startTime = time.time()         
-    print(particleSwarm(tasks, employees))
-    print(f"Execution Time: {time.time() - startTime:.4f} seconds")
+    def returnBinary(self, position):
+        binary_position = []
+        for task_values in position:
+            max_index = task_values.index(max(task_values))
+            binary_row = [0] * nEMP
+            binary_row[max_index] = 1
+            binary_position.append(binary_row)
+        return binary_position
+    
+    def decodeParticle(self, position) -> dict[str, str]:
+        assignment = {}
+        for i in range(nTasks):
+            task = taskKeys[i]
+            task_values = position[i]
+            # Select the employee with the highest value (argmax)
+            emp_idx = task_values.index(max(task_values))
+            assignment[task] = EMPKeys[emp_idx]
+        return assignment
+    
+    def fitness(self, alfa, beta, delta, gamma):
+        # α × (Overload Penalty) + β × (Skill Mismatch Penalty)
+        # + δ × (Difficulty Violation Penalty) + γ × (Deadline Violation Penalty)
+        # + σ × (Unique Assignment Violation Penalty)
+        
+        hoursUsed = {staff.id: 0 for staff in STAFF_LIST}
+        overload = 0
+        skillMismatch = 0
+        difficultyViolation = 0
+        deadlineViolation = 0
+
+        assignment = self.decodeParticle(self.position)
+
+        for task, staff in assignment.items():
+            if PROJECTS_LIST[task].required_skill not in STAFF_LIST[staff].skills:
+                skillMismatch += 1e6
+            difficultyViolation += max(0, PROJECTS_LIST[task].difficulty - STAFF_LIST[staff].skill_level)
+            hoursUsed[staff] += PROJECTS_LIST[task].estimated_time
+
+        # Deadline violation
+        assigned_to_staff = defaultdict(list)
+        for task, staff in assignment.items():
+            assigned_to_staff[staff].append(PROJECTS_LIST[task])
+
+        for emp_id, projects in assigned_to_staff.items():
+            sorted_projects = sorted(projects, key=lambda p: p.estimated_time)
+            current_time = 0
+            for proj in sorted_projects:
+                current_time += proj.estimated_time
+                deadlineViolation += max(0, current_time - proj.deadline)
+
+        for staff in STAFF_LIST:
+            overload += max(0, hoursUsed[staff.id] - staff.available_hours)
+
+        return alfa * overload + beta * skillMismatch + delta * difficultyViolation + gamma * deadlineViolation
+    
+    def __str__(self):
+        return("hi")    

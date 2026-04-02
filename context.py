@@ -24,16 +24,17 @@ class Project:
 
 # must be in order of staff id
 STAFF_LIST: list[StaffMember] = [
+    StaffMember(0, 9,  5, ['A', 'C']),
     StaffMember(1, 10, 4, ['A', 'C']),
     StaffMember(2, 12, 6, ['A', 'B', 'C']),
     StaffMember(3, 8,  3, ['A']),
-    StaffMember(4, 15, 7, ['B', 'C']),
-    StaffMember(5, 9,  5, ['A', 'C'])
+    StaffMember(4, 15, 7, ['B', 'C'])    
 ]
 
 
 # must be in order of project id
 PROJECTS_LIST: list[Project] = [
+    Project(0, 6, 4, 11, 'C'),
     Project(1,  4, 3, 8,  'A'),
     Project(2,  6, 5, 12, 'B'),
     Project(3,  2, 2, 6,  'A'),
@@ -42,6 +43,5 @@ PROJECTS_LIST: list[Project] = [
     Project(6,  8, 6, 15, 'B'),
     Project(7,  4, 3, 9,  'C'),
     Project(8,  7, 5, 14, 'B'),
-    Project(9,  2, 2, 5,  'A'),
-    Project(10, 6, 4, 11, 'C')
+    Project(9,  2, 2, 5,  'A')    
 ]
