@@ -17,7 +17,7 @@ elif '-p' in sys.argv:
 else:
     print('# No arguments given')
     print(f'Usage: python {sys.argv[0]} [args]')
-    print('   -g   genetic algorithm')
+    print('   -g   genetic algorithm (slow)')
     print('   -p   particle swarm')
     print()
     print('eg: "python main.py -g"')
