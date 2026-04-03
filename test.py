@@ -26,7 +26,7 @@ if __name__ == '__main__':
     test_parameters()
     print(f"Total execution time: {time.time() - start_time:.2f} seconds")
 
-# tldr high c1 and low c2, w seems agnostic in the range
+# tldr high c1 and low c2, w seems worse as trending higher
 
 # w=0.1, c1=1.0, c2=1.0: avg fitness = 0.3400
 # w=0.1, c1=1.0, c2=1.5: avg fitness = 8000.4680

@@ -3,7 +3,7 @@ from particle import *
 import random
 import time
 
-def optimiseParticleSwarm(numParticles=200, max_iterations=1000, w=.5, C1=2, C2=2):
+def optimiseParticleSwarm(numParticles=100, max_iterations=1000, w=.1, C1=3, C2=1):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
