@@ -56,6 +56,7 @@ def optimiseParticleSwarm(numParticles=200, max_iterations=1000, w=.5, C1=2, C2=
     # print(f"Best Fitness:    {globalFitness:.4f}")
     return best_assignment, globalFitness
 
-startTime = time.time()
-print(optimiseParticleSwarm())
-print(f"Execution Time: {time.time() - startTime:.4f} seconds")
+if __name__ == '__main__':
+    startTime = time.time()
+    print(optimiseParticleSwarm())
+    print(f"Execution Time: {time.time() - startTime:.4f} seconds")

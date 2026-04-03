@@ -4,27 +4,6 @@ from copy import deepcopy
 from context import *
 from collections import defaultdict
 
-# tasks = {
-#     'T1': {'time': 4, 'difficulty': 3, 'deadline': 8, 'skill': 'A'},
-#     'T2': {'time': 6, 'difficulty': 5, 'deadline': 12, 'skill': 'B'},
-#     'T3': {'time': 2, 'difficulty': 2, 'deadline': 6, 'skill': 'A'},
-#     'T4': {'time': 5, 'difficulty': 4, 'deadline': 10, 'skill': 'C'},
-#     'T5': {'time': 3, 'difficulty': 1, 'deadline': 7, 'skill': 'A'},
-#     'T6': {'time': 8, 'difficulty': 6, 'deadline': 15, 'skill': 'B'},
-#     'T7': {'time': 4, 'difficulty': 3, 'deadline': 9, 'skill': 'C'},
-#     'T8': {'time': 7, 'difficulty': 5, 'deadline': 14, 'skill': 'B'},
-#     'T9': {'time': 2, 'difficulty': 2, 'deadline': 5, 'skill': 'A'},
-#     'T10': {'time': 6, 'difficulty': 4, 'deadline': 11, 'skill': 'C'},
-# }
-
-# employees = {
-#     'E1': {'available_hours': 10, 'skill_level': 4, 'skills': ['A', 'C']},
-#     'E2': {'available_hours': 12, 'skill_level': 6, 'skills': ['A', 'B', 'C']},
-#     'E3': {'available_hours': 8, 'skill_level': 3, 'skills': ['A']},
-#     'E4': {'available_hours': 15, 'skill_level': 7, 'skills': ['B', 'C']},
-#     'E5': {'available_hours': 9, 'skill_level': 5, 'skills': ['A', 'C']},
-# }
-
 taskKeys = list(task.id for task in PROJECTS_LIST)
 EMPKeys  = list(employee.id for employee in STAFF_LIST)
 nEMP     = len(EMPKeys)
@@ -36,7 +15,6 @@ class Particle:
         self.velocity = [[random.uniform(-1, 1) for _ in range(nEMP)] for _ in range(nTasks)]
         self.bestPosition = [row[:] for row in self.position]
         self.bestFitness = self.fitness(.2, .2, .2, .2)
-
 
     def returnBinary(self, position):
         binary_position = []
@@ -71,15 +49,15 @@ class Particle:
         assignment = self.decodeParticle(self.position)
 
         for task, staff in assignment.items():
-            if PROJECTS_LIST[task].required_skill not in STAFF_LIST[staff].skills:
+            if PROJECTS_DICT[task].required_skill not in STAFF_DICT[staff].skills:
                 skillMismatch += 1e6
-            difficultyViolation += max(0, PROJECTS_LIST[task].difficulty - STAFF_LIST[staff].skill_level)
-            hoursUsed[staff] += PROJECTS_LIST[task].estimated_time
+            difficultyViolation += max(0, PROJECTS_DICT[task].difficulty - STAFF_DICT[staff].skill_level)
+            hoursUsed[staff] += PROJECTS_DICT[task].estimated_time
 
         # Deadline violation
         assigned_to_staff = defaultdict(list)
         for task, staff in assignment.items():
-            assigned_to_staff[staff].append(PROJECTS_LIST[task])
+            assigned_to_staff[staff].append(PROJECTS_DICT[task])
 
         for emp_id, projects in assigned_to_staff.items():
             sorted_projects = sorted(projects, key=lambda p: p.estimated_time)
