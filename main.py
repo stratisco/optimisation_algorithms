@@ -17,12 +17,21 @@ elif '-p' in sys.argv:
     print('Particle Swarm')
     print(optimiseParticleSwarm())
 
+elif '-t' in sys.argv:
+    print('Testing')
+    print(f'   genetic-algorithm   {genetic_algorithm(100, 100, graph='genetic_graph.png').getCost()}')
+    print(f'   particle-swarm      {optimiseParticleSwarm()[1]}')
+    print()
+
+
 else:
     print('# No valid arguments given')
     print(f'Usage: python {sys.argv[0]} [args]')
     print('   -g   genetic algorithm')
     print('   -g+  genetic algorithm with graph output (slower)')
     print('   -p   particle swarm')
+    print()
+    print('   -t   test algorithms')
     print()
     print('eg: "python main.py -g"')
     exit()

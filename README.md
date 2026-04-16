@@ -17,6 +17,8 @@ Usage: "python main.py [args]"
    -g+  genetic algorithm with graph output (slower)
    -p   particle swarm
 
+   -t   test algorithms
+
 eg: "python main.py -g"
 ```
 
@@ -25,7 +27,7 @@ Just submit a pull request. I'll add you as a collaborator once I know your acco
 
 
 > [!IMPORTANT]
-> Make sure all algorithms run correctly before pushing any changes
+> Make sure all algorithms run correctly before pushing any changes using `python main.py -t`
 
 ## Repository contents
 * `main.py` - main script to run all programs
