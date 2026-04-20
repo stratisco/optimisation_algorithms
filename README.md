@@ -16,8 +16,8 @@ Usage: "python main.py [args]"
    -g   genetic algorithm
    -g+  genetic algorithm with graph output (slower)
    -p   particle swarm
+   -p+  particle swarm with graph output (slower)    
    -a   ant colony optimisation
-
    -t   test algorithms
 
 eg: "python main.py -t"
