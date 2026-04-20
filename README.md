@@ -16,10 +16,11 @@ Usage: "python main.py [args]"
    -g   genetic algorithm
    -g+  genetic algorithm with graph output (slower)
    -p   particle swarm
+   -a   ant colony optimisation
 
    -t   test algorithms
 
-eg: "python main.py -g"
+eg: "python main.py -t"
 ```
 
 ## Contribution
@@ -42,6 +43,9 @@ Just submit a pull request. I'll add you as a collaborator once I know your acco
 * `particle.py` - 
 * `swarm.py` -
 * `particle_test` -
+
+*ant colony optimisation*
+* `ACO_ASS1.py` -
 
 
 <!--
