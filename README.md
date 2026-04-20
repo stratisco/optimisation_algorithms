@@ -44,6 +44,9 @@ Just submit a pull request. I'll add you as a collaborator once I know your acco
 * `swarm.py` -
 * `particle_test` -
 
+*ant colony optimisation*
+* `ACO_ASS1.py` -
+
 
 <!--
 ## Vector representation *(for genetic algorithm)*:
