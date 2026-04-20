@@ -7,7 +7,7 @@ def genetic_algorithm(
         pop_size:int,
         mutation_prob:float=0.1,
         eletism:float|int=0.04,
-        tornament_size:int=5,
+        tornament_size:int=6,
         graph:str=None,
         quickFinish=True
     ):
