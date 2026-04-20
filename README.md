@@ -16,10 +16,11 @@ Usage: "python main.py [args]"
    -g   genetic algorithm
    -g+  genetic algorithm with graph output (slower)
    -p   particle swarm
+   -a   ant colony optimisation
 
    -t   test algorithms
 
-eg: "python main.py -g"
+eg: "python main.py -t"
 ```
 
 ## Contribution
