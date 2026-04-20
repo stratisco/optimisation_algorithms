@@ -50,7 +50,7 @@ class Particle:
 
         for task, staff in assignment.items():
             if PROJECTS_DICT[task].required_skill not in STAFF_DICT[staff].skills:
-                skillMismatch += 1e6
+                skillMismatch += 3
             difficultyViolation += max(0, PROJECTS_DICT[task].difficulty - STAFF_DICT[staff].skill_level)
             hoursUsed[staff] += PROJECTS_DICT[task].estimated_time
 

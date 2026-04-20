@@ -1,9 +1,9 @@
 from context import *
 from particle import *
-import random
+import random, matplotlib.pyplot as plt
 import time
 
-def optimiseParticleSwarm(numParticles=100, max_iterations=1000, w=.1, C1=3, C2=1):
+def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.1, C1=2, C2=1.3):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -12,6 +12,9 @@ def optimiseParticleSwarm(numParticles=100, max_iterations=1000, w=.1, C1=3, C2=
     globalBest = min(particles, key=lambda p: p.bestFitness)
     globalPos = [row[:] for row in globalBest.bestPosition]
     globalFitness = globalBest.bestFitness
+
+    avg_fitnesses = []
+    best_fitnesses = []
 
     for i in range(max_iterations):
         for particle in particles:
@@ -47,16 +50,32 @@ def optimiseParticleSwarm(numParticles=100, max_iterations=1000, w=.1, C1=3, C2=
             if f < globalFitness:
                 globalFitness = f
                 globalPos = [row[:] for row in new_pos]
+        
+        if graph == None:
+            fitness_values = [particle.fitness(.2, .2, .2, .2) for particle in particles]
+            avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
+            best_fitnesses.append(min(fitness_values))
 
-        if globalFitness == 0:
+        if globalFitness == 0 and graph == None:
             break
 
     best_assignment = particle.decodeParticle(globalPos)
-    # print("Best Assignment:", best_assignment)
-    # print(f"Best Fitness:    {globalFitness:.4f}")
+
+    if graph != None and graph != '':
+        plt.figure(figsize=(9, 5), dpi=400)
+        plt.plot(avg_fitnesses, label="avg fitness")
+        plt.plot(best_fitnesses, label="best fitness")
+        plt.title("Particle swarm optimization")
+        plt.xlabel("iteration")
+        plt.ylabel("fitness")
+        plt.legend()
+        plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(avg_fitnesses)})", fontsize=8, fontstyle="italic", color="dimgrey")
+        plt.savefig(graph)
+        plt.close()
+
     return best_assignment, globalFitness
 
 if __name__ == '__main__':
     startTime = time.time()
-    print(optimiseParticleSwarm())
+    print(optimiseParticleSwarm(100, "swarm_graph.png", 100))
     print(f"Execution Time: {time.time() - startTime:.4f} seconds")

@@ -17,10 +17,15 @@ elif '-p' in sys.argv:
     print('Particle Swarm')
     print(optimiseParticleSwarm())
 
+elif '-p+' in sys.argv:
+    print('Particle Swarm with graph')
+    print(optimiseParticleSwarm(1000, "swarm_graph.png", 300))
+    print("graph is located at 'swarm_graph.png'")
+
 elif '-t' in sys.argv:
     print('Testing')
-    print(f'   genetic-algorithm   {genetic_algorithm(100, 100, graph='genetic_graph.png').getCost()}')
-    print(f'   particle-swarm      {optimiseParticleSwarm()[1]}')
+    # print(f'   genetic-algorithm   {genetic_algorithm(100, 100, graph='genetic_graph.png').getCost()}') BROKEN
+    print(f'   particle-swarm      {optimiseParticleSwarm(1000, "swarm_graph.png", 300)[1]}')
     print()
 
 
@@ -30,7 +35,7 @@ else:
     print('   -g   genetic algorithm')
     print('   -g+  genetic algorithm with graph output (slower)')
     print('   -p   particle swarm')
-    print()
+    print('   -p+  particle swarm with graph output (slower)    ')
     print('   -t   test algorithms')
     print()
     print('eg: "python main.py -g"')
