@@ -5,12 +5,18 @@ from genetic import genetic_algorithm
 start = time.time()
 
 if '-g' in sys.argv:
+    quickFinish = 'q' not in sys.argv
     print('Genetic Algorithm')
-    print(genetic_algorithm(500, 500))
+    if not quickFinish:
+        print('*quick finish is off')
+    print(genetic_algorithm(500, 500, quickFinish=quickFinish, verbose=True))
 
 elif '-g+' in sys.argv:
+    quickFinish = 'q' not in sys.argv
     print('Genetic Algorithm with graph')
-    print(genetic_algorithm(500, 500, graph='genetic_graph.png'))
+    if not quickFinish:
+        print('*quick finish is off')
+    print(genetic_algorithm(500, 500, graph='genetic_graph.png', quickFinish=quickFinish, verbose=True))
     print("graph is located at 'genetic_graph.png'")
 
 elif '-p' in sys.argv:
@@ -40,12 +46,13 @@ elif '-t' in sys.argv:
 else:
     print('# No valid arguments given')
     print(f'Usage: python {sys.argv[0]} [args]')
-    print('   -g   genetic algorithm')
-    print('   -g+  genetic algorithm with graph output (slower)')
-    print('   -p   particle swarm')
-    print('   -p+  particle swarm with graph output (slower)    ')
-    print('   -a   ant colony optimisation')
-    print('   -t   test algorithms')
+    print('   -g    genetic algorithm')
+    print('   -g q  genetic algorithm (no quick finish)')
+    print('   -g+   genetic algorithm with graph output (slower)')
+    print('   -p    particle swarm')
+    print('   -p+   particle swarm with graph output (slower)    ')
+    print('   -a    ant colony optimisation')
+    print('   -t    test algorithms')
     print()
     print('eg: "python main.py -t"')
     exit()

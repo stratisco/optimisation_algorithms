@@ -9,7 +9,8 @@ def genetic_algorithm(
         eletism:float|int=0.04,
         tornament_size:int=6,
         graph:str=None,
-        quickFinish=True
+        quickFinish=True,
+        verbose:bool=False
     ):
     '''
     to disable graphing set the graph parameter to None or ''
@@ -29,6 +30,9 @@ def genetic_algorithm(
     generation = 0
     finish = False
     while generation < generations and not finish:
+        if verbose:
+            print(f'generation {generation+1}/{generations}', end='\r', flush=True)
+
         if graph != None and graph != '':
             costs = [i.getCost() for i in population]
             avg_costs += [sum(costs) / len(costs)]
@@ -38,11 +42,6 @@ def genetic_algorithm(
 
         # eletism
         best = sorted(population, key=lambda x: x.getCost())[:elete_count]
-
-
-        if elete_count != 0:
-            if best[0].getCost() == 0 and quickFinish:
-                finish = True
 
         new_population += [i.clone() for i in best]
 
@@ -61,6 +60,13 @@ def genetic_algorithm(
         population = new_population
         generation += 1
 
+        if min(population, key=lambda x: x.getCost()).getCost() == 0 and quickFinish:
+            finish = True
+
+    if finish and verbose:
+        print(f'Quick finished at generation {generation+1}/{generations}')
+    elif verbose:
+        print()
 
     if graph != None and graph != '':
         plt.figure(figsize=(9, 5), dpi=400)
