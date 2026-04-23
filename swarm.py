@@ -51,7 +51,7 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
                 globalFitness = f
                 globalPos = [row[:] for row in new_pos]
         
-        if graph == None:
+        if graph != None:
             fitness_values = [particle.fitness(.2, .2, .2, .2) for particle in particles]
             avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
             best_fitnesses.append(min(fitness_values))
