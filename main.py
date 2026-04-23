@@ -28,7 +28,7 @@ elif '-a' in sys.argv:
 
 elif '-t' in sys.argv:
     print('Testing')
-    # print(f'   genetic-algorithm   {genetic_algorithm(500, 500, graph='genetic_graph.png').getCost()}') BROKEN
+    print(f'   genetic-algorithm   {genetic_algorithm(500, 500, graph='genetic_graph.png').getCost()}') BROKEN
     print(f'   particle-swarm      {optimiseParticleSwarm(1000, "swarm_graph.png", 300)[1]}')
     print(f'   ant-colony         :')
     import ACO_ASS1
