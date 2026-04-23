@@ -8,7 +8,7 @@ OPTIMISATIONS = True
 MUTATE_ROW_FLIP = False
 
 
-_cost_cache:dict = {}
+__cost_cache:dict = {}
 def vectorCost(vector: list[list[int]]) -> float:
     '''
     cache flag forces cost caching to either be off or on. otherwise it defaults to OPTIMISATION
@@ -17,8 +17,8 @@ def vectorCost(vector: list[list[int]]) -> float:
     # cache key is a tuple bc apparently they are faster than using strings (google said so it must be true)
     cache_key = tuple(tuple(a) for a in vector)
 
-    if OPTIMISATIONS and cache_key in _cost_cache:
-        return _cost_cache[cache_key]
+    if OPTIMISATIONS and cache_key in __cost_cache:
+        return __cost_cache[cache_key]
 
 
     _a = 0.20
@@ -69,9 +69,15 @@ def vectorCost(vector: list[list[int]]) -> float:
     out = _a * overwork_penalty + _b * skill_penalty + _d * difficulty_penalty + _t * deadline_penalty + _y * assignment_violation
 
     if OPTIMISATIONS:
-        _cost_cache[cache_key] = out
+        __cost_cache[cache_key] = out
 
     return out
+
+
+def resetCostCache():
+    """resets the cost cache for optimisation fairness"""
+    global __cost_cache
+    __cost_cache = {}
 
 
 class Chromosome:
