@@ -3,7 +3,7 @@ from particle import *
 import random, matplotlib.pyplot as plt
 import time
 
-def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.1, C1=2, C2=1.3):
+def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.3):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -15,6 +15,7 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
 
     avg_fitnesses = []
     best_fitnesses = []
+    avg_vel = 1
 
     for i in range(max_iterations):
         for particle in particles:
@@ -30,6 +31,8 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
                     v = (w * particle.velocity[task_idx][emp_idx]
                         + C1 * r1 * (particle.bestPosition[task_idx][emp_idx] - particle.position[task_idx][emp_idx])
                         + C2 * r2 * (globalPos[task_idx][emp_idx] - particle.position[task_idx][emp_idx]))
+
+                    avg_vel = (avg_vel * (i * numParticles + particles.index(particle)) + abs(v)) / ((i * numParticles) + particles.index(particle) + 1)
 
                     # Xi+1 = Xi + Vi+1  (clamped to 0-1 for simplicity, as it's continuous)
                     x = particle.position[task_idx][emp_idx] + v
@@ -60,6 +63,8 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
             break
 
     best_assignment = particle.decodeParticle(globalPos)
+
+    print(avg_vel)
 
     if graph != None and graph != '':
         plt.figure(figsize=(9, 5), dpi=400)
