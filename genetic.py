@@ -1,5 +1,36 @@
-import random, matplotlib.pyplot as plt
+import random, matplotlib.pyplot as plt, tracemalloc, time
 from chromosome import Chromosome, tournament_selection
+
+
+def plot(
+        filename:str,
+        plots,
+        title='',
+        xlabel='',
+        ylabel='',
+        subtext=''
+    ):
+    '''
+        filename:str,
+        plots (in format [[plot, name:str], [plot2, name2:str]...])
+        title=''
+        xlabel=''
+        ylabel=''
+        subtext=''
+    '''
+
+    plt.figure(figsize=(9, 5), dpi=400)
+
+    for p in plots:
+        plt.plot(p[0], label=p[1])
+
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+    plt.legend()
+    plt.figtext(0.01, 0.015, subtext, fontsize=8, fontstyle="italic", color="dimgrey")
+    plt.savefig(filename)
+    plt.close()
 
 
 def genetic_algorithm(
@@ -8,9 +39,12 @@ def genetic_algorithm(
         mutation_prob:float=0.1,
         eletism:float|int=0.04,
         tornament_size:int=6,
-        graph:str=None,
         quickFinish=True,
-        verbose:bool=False
+        verbose:bool=False,
+
+        cost_graph:str=None,
+        memory_graph:str=None,
+        time_graph:str=None
     ):
     '''
     to disable graphing set the graph parameter to None or ''
@@ -26,6 +60,13 @@ def genetic_algorithm(
     
     avg_costs = []
     best_costs = []
+    memory_mb = []
+    time_spots = []
+
+    start_time = time.time()
+
+    if memory_graph != None and memory_graph != '':
+        tracemalloc.start()
 
     generation = 0
     finish = False
@@ -33,11 +74,19 @@ def genetic_algorithm(
         if verbose:
             print(f'generation {generation+1}/{generations}', end='\r', flush=True)
 
-        if graph != None and graph != '':
+        if cost_graph != None and cost_graph != '':
             costs = [i.getCost() for i in population]
             avg_costs += [sum(costs) / len(costs)]
             best_costs += [min(costs)]
-        
+
+        if memory_graph != None and memory_graph != '':
+            _, peak = tracemalloc.get_traced_memory()
+            memory_mb += [peak / 1024 / 1024]
+
+        if time_graph != None and time_graph != '':
+            time_spots += [time.time() - start_time]
+            start_time = time.time()
+
         new_population = []
 
         # eletism
@@ -68,17 +117,44 @@ def genetic_algorithm(
     elif verbose:
         print()
 
-    if graph != None and graph != '':
-        plt.figure(figsize=(9, 5), dpi=400)
-        plt.plot(avg_costs, label="avg cost")
-        plt.plot(best_costs, label="best cost")
-        plt.title("Genetic algorithm")
-        plt.xlabel("generation")
-        plt.ylabel("cost")
-        plt.legend()
-        plt.figtext(0.01, 0.015, f"({pop_size=}, {generation=})", fontsize=8, fontstyle="italic", color="dimgrey")
-        plt.savefig(graph)
-        plt.close()
+    if cost_graph != None and cost_graph != '':
+        plot(
+            cost_graph,
+            [
+                [avg_costs, 'avg costs'],
+                [best_costs, 'best costs']
+            ],
+            'Genetic cost graph',
+            'generation',
+            'cost',
+            f"({pop_size=}, {generation=})"
+        )
+
+    if memory_graph != None and memory_graph != '':
+        tracemalloc.stop()
+        plot(
+            memory_graph,
+            [
+                [memory_mb, 'peak memory (MB)']
+            ],
+            'Genetic memory usage',
+            'generation',
+            'memory (MB)',
+            f"({pop_size=}, {generation=})"
+        )
+
+    if time_graph != None and time_graph != '':
+        tracemalloc.stop()
+        plot(
+            time_graph,
+            [
+                [time_spots, 'Time']
+            ],
+            'Genetic time usage',
+            'generation',
+            'Time (seconds)',
+            f"({pop_size=}, {generation=})"
+        )
 
     return min(population, key=lambda x: x.getCost())
 
