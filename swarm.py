@@ -1,9 +1,9 @@
 from context import *
 from particle import *
-import random, matplotlib.pyplot as plt
-import time
+from genetic import plot
+import random, tracemalloc, time
 
-def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.3):
+def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, memory_graph=None, w=.5, C1=2, C2=1.3):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -15,7 +15,12 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
 
     avg_fitnesses = []
     best_fitnesses = []
+    memory_mb = []
     avg_vel = 1
+    track_memory = (graph is not None and graph != '') or (memory_graph is not None and memory_graph != '')
+
+    if track_memory:
+        tracemalloc.start()
 
     for i in range(max_iterations):
         for particle in particles:
@@ -59,6 +64,10 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
             avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
             best_fitnesses.append(min(fitness_values))
 
+        if track_memory:
+            _, peak = tracemalloc.get_traced_memory()
+            memory_mb.append(peak / 1024 / 1024)
+
         if globalFitness == 0 and graph == None:
             break
 
@@ -67,16 +76,32 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
     print(avg_vel)
 
     if graph != None and graph != '':
-        plt.figure(figsize=(9, 5), dpi=400)
-        plt.plot(avg_fitnesses, label="avg fitness")
-        plt.plot(best_fitnesses, label="best fitness")
-        plt.title("Particle swarm optimization")
-        plt.xlabel("iteration")
-        plt.ylabel("fitness")
-        plt.legend()
-        plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(avg_fitnesses)})", fontsize=8, fontstyle="italic", color="dimgrey")
-        plt.savefig(graph)
-        plt.close()
+        plot(
+            graph,
+            [
+                [avg_fitnesses, 'avg fitness'],
+                [best_fitnesses, 'best fitness']
+            ],
+            'Particle swarm optimization',
+            'iteration',
+            'fitness',
+            f"(particles={numParticles}, iterations={len(avg_fitnesses)})"
+        )
+
+    if track_memory:
+        tracemalloc.stop()
+
+    if memory_graph != None and memory_graph != '':
+        plot(
+            memory_graph,
+            [
+                [memory_mb, 'peak memory (MB)']
+            ],
+            'Particle swarm memory usage',
+            'iteration',
+            'memory (MB)',
+            f"(particles={numParticles}, iterations={len(memory_mb)})"
+        )
 
     return best_assignment, globalFitness
 
