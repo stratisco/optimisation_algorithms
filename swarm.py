@@ -3,7 +3,7 @@ from particle import *
 from genetic import plot
 import random, tracemalloc, time
 
-def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, memory_graph=None, w=.5, C1=2, C2=1.3):
+def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.5):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -13,9 +13,11 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, mem
     globalPos = [row[:] for row in globalBest.bestPosition]
     globalFitness = globalBest.bestFitness
 
+    start_time = time.time()
     avg_fitnesses = []
     best_fitnesses = []
     memory_mb = []
+    cumulative_times = []
     avg_vel = 1
     track_memory = (graph is not None and graph != '') or (memory_graph is not None and memory_graph != '')
 
@@ -59,6 +61,8 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, mem
                 globalFitness = f
                 globalPos = [row[:] for row in new_pos]
         
+        cumulative_times.append(time.time() - start_time)
+
         if graph != None:
             fitness_values = [particle.fitness(.2, .2, .2, .2) for particle in particles]
             avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
@@ -102,6 +106,18 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, mem
             'memory (MB)',
             f"(particles={numParticles}, iterations={len(memory_mb)})"
         )
+
+        # Second graph for cumulative time
+        plt.figure(figsize=(9, 5), dpi=400)
+        plt.plot(cumulative_times, label="cumulative time")
+        plt.title("Particle swarm optimization - Cumulative Time")
+        plt.xlabel("iteration")
+        plt.ylabel("time (s)")
+        plt.legend()
+        plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(cumulative_times)})", fontsize=8, fontstyle="italic", color="dimgrey")
+        time_graph = graph.replace('.png', '_pref.png')
+        plt.savefig(time_graph)
+        plt.close()
 
     return best_assignment, globalFitness
 

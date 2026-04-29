@@ -25,7 +25,7 @@ elif '-p' in sys.argv:
 
 elif '-p+' in sys.argv:
     print('Particle Swarm with graph')
-    print(optimiseParticleSwarm(100, "swarm_graph.png", 100))
+    print(optimiseParticleSwarm(100, "swarm_graph.png", 500))
     print("graph is located at 'swarm_graph.png'")
 
 elif '-a' in sys.argv:
