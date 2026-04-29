@@ -3,7 +3,7 @@ from particle import *
 import random, matplotlib.pyplot as plt
 import time
 
-def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.3):
+def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.5):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -13,8 +13,10 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
     globalPos = [row[:] for row in globalBest.bestPosition]
     globalFitness = globalBest.bestFitness
 
+    start_time = time.time()
     avg_fitnesses = []
     best_fitnesses = []
+    cumulative_times = []
     avg_vel = 1
 
     for i in range(max_iterations):
@@ -54,6 +56,8 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
                 globalFitness = f
                 globalPos = [row[:] for row in new_pos]
         
+        cumulative_times.append(time.time() - start_time)
+
         if graph != None:
             fitness_values = [particle.fitness(.2, .2, .2, .2) for particle in particles]
             avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
@@ -76,6 +80,18 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
         plt.legend()
         plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(avg_fitnesses)})", fontsize=8, fontstyle="italic", color="dimgrey")
         plt.savefig(graph)
+        plt.close()
+
+        # Second graph for cumulative time
+        plt.figure(figsize=(9, 5), dpi=400)
+        plt.plot(cumulative_times, label="cumulative time")
+        plt.title("Particle swarm optimization - Cumulative Time")
+        plt.xlabel("iteration")
+        plt.ylabel("time (s)")
+        plt.legend()
+        plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(cumulative_times)})", fontsize=8, fontstyle="italic", color="dimgrey")
+        time_graph = graph.replace('.png', '_pref.png')
+        plt.savefig(time_graph)
         plt.close()
 
     return best_assignment, globalFitness
