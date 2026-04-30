@@ -24,8 +24,8 @@ elif '-p' in sys.argv:
     print(optimiseParticleSwarm(100, None, 1000))
 
 elif '-p+' in sys.argv:
-    print('Particle Swarm with graph')
-    print(optimiseParticleSwarm(100, "swarm_graph.png", 500))
+    print('Particle Swarm with all graphs (slower)')
+    print(optimiseParticleSwarm(100, 500, cost_graph='swarm_cost.png', memory_graph='swarm_memory.png', time_graph='swarm_time.png'))
     print("graph is located at 'swarm_graph.png'")
 
 elif '-a' in sys.argv:
@@ -35,7 +35,7 @@ elif '-a' in sys.argv:
 elif '-t' in sys.argv:
     print('Testing')
     print(f'   genetic-algorithm   {genetic_algorithm(500, 500, cost_graph="genetic_graph.png").getCost()}')
-    print(f'   particle-swarm      {optimiseParticleSwarm(1000, "swarm_graph.png", 300)[1]}')
+    print(f'   particle-swarm      {optimiseParticleSwarm(100, 500, "swarm_graph.png")[1]}')
     print(f'   ant-colony         :')
     import ACO_ASS1
     print()

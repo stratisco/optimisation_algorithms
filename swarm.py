@@ -3,7 +3,7 @@ from particle import *
 from genetic import plot
 import random, tracemalloc, time
 
-def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.5, C1=2, C2=1.5):
+def optimiseParticleSwarm(numParticles=100, max_iterations=1000, cost_graph=None, memory_graph=None, time_graph=None, w=.5, C1=2, C2=1.5):
     particles = []
     for i in range(numParticles):
         new_particle = Particle()
@@ -19,9 +19,8 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
     memory_mb = []
     cumulative_times = []
     avg_vel = 1
-    track_memory = (graph is not None and graph != '') or (memory_graph is not None and memory_graph != '')
 
-    if track_memory:
+    if memory_graph is not None and memory_graph != '':
         tracemalloc.start()
 
     for i in range(max_iterations):
@@ -63,65 +62,70 @@ def optimiseParticleSwarm(numParticles=100, graph=None, max_iterations=1000, w=.
         
         cumulative_times.append(time.time() - start_time)
 
-        if graph != None:
+        if cost_graph is not None and cost_graph != '':
             fitness_values = [particle.fitness(.2, .2, .2, .2) for particle in particles]
             avg_fitnesses.append(sum(fitness_values) / len(fitness_values))
             best_fitnesses.append(min(fitness_values))
 
-        if track_memory:
+        if memory_graph is not None and memory_graph != '':
             _, peak = tracemalloc.get_traced_memory()
             memory_mb.append(peak / 1024 / 1024)
 
-        if globalFitness == 0 and graph == None:
+        if globalFitness == 0 and not cost_graph and not memory_graph and not time_graph:
             break
 
     best_assignment = particle.decodeParticle(globalPos)
 
     print(avg_vel)
 
-    if graph != None and graph != '':
+    if cost_graph is not None and cost_graph != '':
         plot(
-            graph,
+            cost_graph,
             [
                 [avg_fitnesses, 'avg fitness'],
                 [best_fitnesses, 'best fitness']
             ],
-            'Particle swarm optimization',
-            'iteration',
-            'fitness',
+            'Particle Swarm Optimization Fitness',
+            'Iteration',
+            'Fitness',
             f"(particles={numParticles}, iterations={len(avg_fitnesses)})"
         )
 
-    if track_memory:
-        tracemalloc.stop()
-
-    if memory_graph != None and memory_graph != '':
+    if memory_graph is not None and memory_graph != '':
         plot(
             memory_graph,
             [
                 [memory_mb, 'peak memory (MB)']
             ],
-            'Particle swarm memory usage',
-            'iteration',
-            'memory (MB)',
+            'Particle Swarm Memory Usage',
+            'Iteration',
+            'Memory (MB)',
             f"(particles={numParticles}, iterations={len(memory_mb)})"
         )
 
-        # Second graph for cumulative time
-        plt.figure(figsize=(9, 5), dpi=400)
-        plt.plot(cumulative_times, label="cumulative time")
-        plt.title("Particle swarm optimization - Cumulative Time")
-        plt.xlabel("iteration")
-        plt.ylabel("time (s)")
-        plt.legend()
-        plt.figtext(0.01, 0.015, f"(particles={numParticles}, iterations={len(cumulative_times)})", fontsize=8, fontstyle="italic", color="dimgrey")
-        time_graph = graph.replace('.png', '_pref.png')
-        plt.savefig(time_graph)
-        plt.close()
+    if time_graph is not None and time_graph != '':
+        plot(
+            time_graph,
+            [
+                [cumulative_times, 'cumulative time']
+            ],
+            'Particle Swarm Optimization Cumulative Time Usage',
+            'Iteration',
+            'Time (s)',
+            f"(particles={numParticles}, iterations={len(cumulative_times)})"
+        )
+
+    if memory_graph is not None and memory_graph != '':
+        tracemalloc.stop()
 
     return best_assignment, globalFitness
 
 if __name__ == '__main__':
     startTime = time.time()
-    print(optimiseParticleSwarm(100, "swarm_graph.png", 100))
+    print(optimiseParticleSwarm(
+        100, 500,
+        # cost_graph='swarm_cost.png',
+        memory_graph='swarm_memory.png',
+        # time_graph='swarm_time.png',
+    ))
     print(f"Execution Time: {time.time() - startTime:.4f} seconds")
