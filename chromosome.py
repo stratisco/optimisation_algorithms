@@ -92,6 +92,7 @@ class Chromosome:
     def __init__(self, vector=None):
         self.__vector = []
         
+        # make new random vector
         for _ in range(len(PROJECTS_DICT)):
             if OPTIMISATIONS:
                 row = [0] * len(STAFF_DICT)
@@ -129,6 +130,7 @@ class Chromosome:
 
 
     def getVector(self, clone=False):
+        # gets a chromosomes vector as either a value or a reference
         if not clone:
             return self.__vector
         
@@ -194,4 +196,21 @@ if __name__ == '__main__':
 
     c = Chromosome([[1, 1, 1, 1, 1], [0, 0, 0, 1, 0], [1, 1, 0, 0, 1], [1, 1, 1, 0, 1], [0, 1, 1, 0, 1], [0, 1, 0, 1, 0], [1, 0, 0, 1, 0], [0, 1, 0, 0, 1], [0, 0, 0, 0, 0], [1, 0, 0, 0, 0]])
     assert c.getCost() == 29.6
+    print(c.getCost())
+
+    c = Chromosome(
+        [
+            [0, 1, 0, 0, 0],
+            [1, 0, 0, 0, 0],
+            [0, 0, 0, 0, 1],
+            [0, 0, 0, 1, 0],
+            [1, 0, 0, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 0, 0, 1],
+            [0, 1, 0, 0, 0],
+            [0, 0, 1, 0, 0],
+            [0, 0, 0, 1, 0]
+        ]
+    )
+    assert c.getCost() == 0
     print(c.getCost())

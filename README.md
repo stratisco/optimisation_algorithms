@@ -46,21 +46,3 @@ Just submit a pull request. I'll add you as a collaborator once I know your acco
 
 *ant colony optimisation*
 * `ACO_ASS1.py` -
-
-
-<!--
-## Vector representation *(for genetic algorithm)*:
-
-uses a 3d vector of bits such that `vector[projectId][staffId]` equals `1` if the staff member is assigned to the project and `0` if not
-
-```
-# example with 4 projects and 5 staff members
-
-vector = [
-    [0, 1, 0, 0, 0],   # Project 1 -> Staff 2
-    [0, 1, 0, 1, 0],   # Project 2 -> Staff 2, Staff 4 (over assigned)
-    [1, 0, 0, 0, 0],   # Project 3 -> Staff 1
-    [0, 0, 0, 0, 0],   # Project 4 -> (under assigned)
-]
-```
--->
