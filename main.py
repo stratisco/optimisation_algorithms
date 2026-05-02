@@ -21,7 +21,7 @@ elif '-g+' in sys.argv:
 
 elif '-p' in sys.argv:
     print('Particle Swarm')
-    print(optimiseParticleSwarm(100, None, 1000))
+    print(optimiseParticleSwarm(100, 500))
 
 elif '-p+' in sys.argv:
     print('Particle Swarm with all graphs (slower)')
